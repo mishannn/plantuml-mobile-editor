@@ -34,7 +34,7 @@ export default defineConfig({
         name: "PlantUML Editor",
         short_name: "PlantUML",
         description: "PlantUML Editor for Mobile Browsers",
-        theme_color: "#ffffff",
+        theme_color: "#1867C0",
         icons: [
           {
             src: "./icons/192.png",
