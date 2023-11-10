@@ -15,9 +15,9 @@
     >
       <ol-view
         :center="center"
-        :rotation="rotation"
         :zoom="zoom"
         :projection="projection"
+        :enable-rotation="false"
       />
       <ol-zoom-control />
       <ol-attribution-control />
@@ -51,8 +51,7 @@ const imgCopyright = ref('© <a href="https://plantuml.com/">PlantUML</a>');
 const imgUrl = ref("");
 const size = ref([0, 0]);
 
-const zoom = ref(1);
-const rotation = ref(0);
+const zoom = ref(0);
 
 const center = ref([size.value[0] / 2, size.value[1] / 2]);
 watch(size, (newSize) => {
