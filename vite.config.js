@@ -29,6 +29,7 @@ export default defineConfig({
       },
     }),
     VitePWA({
+      registerType: 'autoUpdate',
       manifest: {
         name: "PlantUML Editor",
         short_name: "PlantUML",
