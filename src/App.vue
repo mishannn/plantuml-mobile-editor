@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <AppBar />
+    <AppBar @download="download" @open="openFile" />
     <v-main>
       <KeepAlive>
         <v-ace-editor
@@ -14,6 +14,7 @@
         <Diagram
           v-if="currentTab == 'preview'"
           :code="code"
+          v-model:image="image"
           style="height: 100%"
         />
       </KeepAlive>
@@ -28,9 +29,9 @@ import BottomMenu from "@/components/BottomMenu.vue";
 import { ref } from "vue";
 import { VAceEditor } from "vue3-ace-editor";
 import Diagram from "./components/Diagram.vue";
+import { watch } from "vue";
 
-const currentTab = ref("code");
-const code = ref(`@startuml
+const exampleCode = `@startuml
 ' hide the spot
 ' hide circle
 
@@ -68,5 +69,38 @@ entity "Entity04" as e04 {
 e01 ||..o{ e02
 e01 |o..o{ e03
 e01 |o..o{ e04
-@enduml`);
+@enduml`;
+
+const currentTab = ref("code");
+
+const localStorageKey = "puml_code";
+const lastCode = localStorage.getItem(localStorageKey);
+const code = ref(lastCode || exampleCode);
+watch(code, (newCode) => {
+  localStorage.setItem(localStorageKey, newCode);
+});
+
+const image = ref();
+
+function download({ downloadType, downloadName }) {
+  if (downloadType == "code") {
+    const file = new File([code.value], `${downloadName || "diagram"}.puml`, {
+      type: "text/plain;charset=utf-8",
+    });
+    saveAs(file);
+    return;
+  }
+
+  if (downloadType == "image") {
+    const file = new File([image.value || ""], `${downloadName || "diagram"}.png`, {
+      type: "image/png",
+    });
+    saveAs(file);
+    return;
+  }
+}
+
+async function openFile(file) {
+  code.value = await file.text()
+}
 </script>

@@ -15,8 +15,8 @@
     >
       <ol-view
         :center="center"
-        :zoom="zoom"
         :projection="projection"
+        :zoom="zoom"
         :enable-rotation="false"
       />
       <ol-zoom-control />
@@ -45,38 +45,47 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  image: {
+    type: Blob,
+  },
 });
 
-const imgCopyright = ref('© <a href="https://plantuml.com/">PlantUML</a>');
-const imgUrl = ref("");
-const size = ref([0, 0]);
+const emit = defineEmits(["update:image"]);
 
-const zoom = ref(0);
+const imgUrl = computed(() => {
+  if (!props.image) {
+    return "";
+  }
+
+  return window.URL.createObjectURL(props.image);
+});
+const imgCopyright = ref('© <a href="https://plantuml.com/">PlantUML</a>');
+
+const size = ref([0, 0]);
+watch(() => props.image, async (newImage) => {
+  if (!newImage) {
+    return "";
+  }
+
+  const bmp = await createImageBitmap(newImage);
+  const { width, height } = bmp;
+  bmp.close();
+
+  size.value = [width, height]
+})
 
 const center = ref([size.value[0] / 2, size.value[1] / 2]);
 watch(size, (newSize) => {
   center.value = [newSize[0] / 2, newSize[1] / 2];
 });
 
+const zoom = ref(0)
 const extent = computed(() => [0, 0, ...size.value]);
 const projection = reactive({
   code: "image",
   units: "pixels",
   extent: extent,
 });
-
-async function getImageSize(blob) {
-  const bmp = await createImageBitmap(blob);
-  const { width, height } = bmp;
-  bmp.close(); // free memory
-
-  return [width, height];
-}
-
-async function storeImage(blob) {
-  size.value = await getImageSize(blob);
-  imgUrl.value = window.URL.createObjectURL(blob);
-}
 
 const loading = ref(true);
 const error = ref();
@@ -91,7 +100,7 @@ function setupWatcher() {
       plantuml
         .renderPng(code)
         .then((blob) => {
-          storeImage(blob);
+          emit('update:image', blob)
           loading.value = false;
         })
         .catch((err) => {
@@ -103,7 +112,7 @@ function setupWatcher() {
   );
 }
 
-const pathname = window.location.pathname.match(/^.*[\/]/)[0]
+const pathname = window.location.pathname.match(/^.*[\/]/)[0];
 
 plantuml
   .initialize("/app" + pathname + "plantuml-wasm")
