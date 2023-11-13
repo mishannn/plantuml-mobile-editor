@@ -31,7 +31,6 @@ export default defineConfig({
     VitePWA({
       workbox: {
         maximumFileSizeToCacheInBytes: 31457280,
-        globPatterns: ["**/*"],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -58,6 +57,16 @@ export default defineConfig({
             handler: "CacheFirst",
             options: {
               cacheName: "cheerpj-cache",
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /.*/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "assets-cache",
               cacheableResponse: {
                 statuses: [0, 200],
               },
