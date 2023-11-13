@@ -1,13 +1,13 @@
 <template>
   <v-app>
     <AppBar @download="download" @open="openFile" />
-    <v-main>
+    <v-main style="display: flex; flex-direction: column;">
       <KeepAlive>
         <v-ace-editor
           v-if="currentTab == 'code'"
           v-model:value="code"
           theme="chrome"
-          style="height: 100%"
+          style="flex: 1 0 auto"
         />
       </KeepAlive>
       <KeepAlive>
@@ -15,7 +15,7 @@
           v-if="currentTab == 'preview'"
           :code="code"
           v-model:image="image"
-          style="height: 100%"
+          style="flex: 1 0 auto"
         />
       </KeepAlive>
     </v-main>

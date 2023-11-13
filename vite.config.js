@@ -29,7 +29,42 @@ export default defineConfig({
       },
     }),
     VitePWA({
-      registerType: 'autoUpdate',
+      workbox: {
+        maximumFileSizeToCacheInBytes: 31457280,
+        globPatterns: ["**/*"],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: "CacheOnly",
+            options: {
+              cacheName: "google-fonts-cache",
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: "CacheOnly",
+            options: {
+              cacheName: "gstatic-fonts-cache",
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/cjrtnc\.leaningtech\.com\/2\.3\/.*/i,
+            handler: "CacheOnly",
+            options: {
+              cacheName: "cheerpj-cache",
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+      },
       manifest: {
         name: "PlantUML Editor",
         short_name: "PlantUML",
