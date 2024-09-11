@@ -46,14 +46,14 @@
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props">
               <template v-slot:prepend>
-                <v-icon :icon="downloadButtonIcon" />
+                <v-icon icon="mdi-download" />
               </template>
-              <v-list-item-title>{{ downloadButtonLabel }}</v-list-item-title>
+              <v-list-item-title>Download</v-list-item-title>
             </v-list-item>
           </template>
 
           <template v-slot:default="{ isActive }">
-            <v-card :title="downloadButtonLabel">
+            <v-card title="Save">
               <div style="padding: 16px">
                 <v-radio-group v-model:model-value="downloadType">
                   <v-radio label="Code" value="code"></v-radio>
@@ -118,9 +118,6 @@ function openFile(isActive) {
   emit("open", fileForOpen.value[0])
   isActive.value = false
 }
-
-const downloadButtonIcon = navigator.share ? "mdi-share-variant" : "mdi-download"
-const downloadButtonLabel = navigator.share ? "Share" : "Download"
 
 const downloadType = ref("code");
 const downloadName = ref("");

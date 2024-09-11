@@ -3,10 +3,20 @@
     <AppBar v-model:mode="mode" @download="download" @open="openFile" />
     <v-main style="display: flex; flex-direction: column;">
       <KeepAlive>
-        <v-ace-editor v-if="mode == 'edit'" v-model:value="code" theme="chrome" style="flex: 1 0 auto" />
+        <v-ace-editor
+          v-if="mode == 'edit'"
+          v-model:value="code"
+          theme="chrome"
+          style="flex: 1 0 auto"
+        />
       </KeepAlive>
       <KeepAlive>
-        <Diagram v-if="mode == 'preview'" :code="code" v-model:image="image" style="flex: 1 0 auto" />
+        <Diagram
+          v-if="mode == 'preview'"
+          :code="code"
+          v-model:image="image"
+          style="flex: 1 0 auto"
+        />
       </KeepAlive>
     </v-main>
   </v-app>
@@ -71,55 +81,20 @@ watch(code, (newCode) => {
 
 const image = ref();
 
-async function download({ downloadType, downloadName }) {
+function download({ downloadType, downloadName }) {
   if (downloadType == "code") {
     const file = new File([code.value], `${downloadName || "diagram"}.puml`, {
       type: "text/plain;charset=utf-8",
     });
-
-    const shareData = {
-      title: downloadName,
-      files: [file]
-    }
-
-    try {
-      if (navigator.share && navigator.canShare(shareData)) {
-        await navigator.share(shareData)
-      } else {
-        saveAs(file);
-      }
-    } catch (e) {
-      alert(`can't share or download file: ${e.message}`)
-    }
-
+    saveAs(file);
     return;
   }
 
   if (downloadType == "image") {
-    if (!image.value) {
-      alert("Image isn't ready yet")
-      return;
-    }
-
-    const file = new File([image.value], `${downloadName || "diagram"}.png`, {
+    const file = new File([image.value || ""], `${downloadName || "diagram"}.png`, {
       type: "image/png",
     });
-
-    const shareData = {
-      title: downloadName,
-      files: [file]
-    }
-
-    try {
-      if (navigator.share && navigator.canShare(shareData)) {
-        await navigator.share(shareData)
-      } else {
-        saveAs(file);
-      }
-    } catch (e) {
-      alert(`can't share or download file: ${e.message}`)
-    }
-
+    saveAs(file);
     return;
   }
 }
