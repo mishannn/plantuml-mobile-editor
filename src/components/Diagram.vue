@@ -6,39 +6,22 @@
     <div v-else-if="error" class="plantuml-diagram__error-container">
       <v-alert :text="error.message" type="error" />
     </div>
-    <ol-map
-      v-else
-      class="plantuml-diagram__openlayers"
-      :loadTilesWhileAnimating="true"
-      :loadTilesWhileInteracting="true"
-      style="height: 400px"
-    >
-      <ol-view
-        :center="center"
-        :projection="projection"
-        :zoom="zoom"
-        :enable-rotation="false"
-      />
+    <ol-map v-else class="plantuml-diagram__openlayers" :loadTilesWhileAnimating="true"
+      :loadTilesWhileInteracting="true" style="height: 400px">
+      <ol-view :center="center" :projection="projection" :zoom="zoom" :enable-rotation="false" />
       <ol-zoom-control />
       <ol-attribution-control />
       <ol-image-layer id="xkcd">
-        <ol-source-image-static
-          :url="imgUrl"
-          :imageSize="size"
-          :imageExtent="extent"
-          :projection="projection"
-          :attributions="imgCopyright"
-        ></ol-source-image-static>
+        <ol-source-image-static :url="imgUrl" :imageSize="size" :imageExtent="extent" :projection="projection"
+          :attributions="imgCopyright"></ol-source-image-static>
       </ol-image-layer>
     </ol-map>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { watch } from "vue";
-import { reactive } from "vue";
-import { ref } from "vue";
+import { computed, watch, reactive, ref } from "vue";
+import plantumlEncoder from "plantuml-encoder"
 
 const props = defineProps({
   code: {
@@ -90,39 +73,39 @@ const projection = reactive({
 const loading = ref(true);
 const error = ref();
 
-function setupWatcher() {
-  watch(
-    () => props.code,
-    (code) => {
-      loading.value = true;
-      error.value = undefined;
+watch(
+  () => props.code,
+  (code) => {
+    loading.value = true;
+    error.value = undefined;
 
-      plantuml
-        .renderPng(code)
-        .then((blob) => {
-          emit('update:image', blob)
-          loading.value = false;
-        })
-        .catch((err) => {
-          error.value = err;
-          loading.value = false;
-        });
-    },
-    { immediate: true }
-  );
-}
+    const encoded = plantumlEncoder.encode(code)
 
-const pathname = window.location.pathname.match(/^.*[\/]/)[0];
+    fetch(`https://www.plantuml.com/plantuml/png/${encoded}`)
+      .then((response) => response.blob())
+      .then((blob) => {
+        emit('update:image', blob)
+        loading.value = false;
+      })
+      .catch((err) => {
+        error.value = err;
+        loading.value = false;
+      });
+  },
+  { immediate: true }
+);
 
-plantuml
-  .initialize("/app" + pathname + "plantuml-wasm")
-  .then(() => {
-    setupWatcher();
-  })
-  .catch((err) => {
-    error.value = err;
-    loading.value = false;
-  });
+// const pathname = window.location.pathname.match(/^.*[\/]/)[0];
+
+// plantuml
+//   .initialize("/app" + pathname + "plantuml-wasm")
+//   .then(() => {
+//     setupWatcher();
+//   })
+//   .catch((err) => {
+//     error.value = err;
+//     loading.value = false;
+//   });
 </script>
 
 <style lang="scss">

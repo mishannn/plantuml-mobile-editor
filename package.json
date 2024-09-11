@@ -2,7 +2,7 @@
   "name": "plantuml-mobile-editor",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -17,7 +17,7 @@
     "vue": "^3.2.0",
     "vue3-ace-editor": "^2.2.4",
     "vue3-openlayers": "^3.1.0",
-    "vuetify": "^3.0.0"
+    "vuetify": "^3.7.1"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",

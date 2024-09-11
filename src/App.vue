@@ -1,10 +1,10 @@
 <template>
   <v-app>
-    <AppBar @download="download" @open="openFile" />
+    <AppBar v-model:mode="mode" @download="download" @open="openFile" />
     <v-main style="display: flex; flex-direction: column;">
       <KeepAlive>
         <v-ace-editor
-          v-if="currentTab == 'code'"
+          v-if="mode == 'edit'"
           v-model:value="code"
           theme="chrome"
           style="flex: 1 0 auto"
@@ -12,14 +12,13 @@
       </KeepAlive>
       <KeepAlive>
         <Diagram
-          v-if="currentTab == 'preview'"
+          v-if="mode == 'preview'"
           :code="code"
           v-model:image="image"
           style="flex: 1 0 auto"
         />
       </KeepAlive>
     </v-main>
-    <BottomMenu v-model:model-value="currentTab" />
   </v-app>
 </template>
 
@@ -71,7 +70,7 @@ e01 |o..o{ e03
 e01 |o..o{ e04
 @enduml`;
 
-const currentTab = ref("code");
+const mode = ref("edit"); // or preview
 
 const localStorageKey = "puml_code";
 const lastCode = localStorage.getItem(localStorageKey);
