@@ -79,7 +79,7 @@ async function download({ downloadType, downloadName }) {
 
     try {
       if (navigator.share) {
-        navigator.share({
+        await navigator.share({
           title: downloadName,
           files: [file]
         })
@@ -105,7 +105,7 @@ async function download({ downloadType, downloadName }) {
 
     try {
       if (navigator.share) {
-        navigator.share({
+        await navigator.share({
           title: downloadName,
           files: [file]
         })
