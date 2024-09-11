@@ -54,16 +54,6 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https:\/\/cjrtnc\.leaningtech\.com\/2\.3\/.*/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "cheerpj-cache",
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
             urlPattern: /.*/,
             handler: "CacheFirst",
             options: {
