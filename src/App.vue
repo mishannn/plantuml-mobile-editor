@@ -77,12 +77,14 @@ async function download({ downloadType, downloadName }) {
       type: "text/plain;charset=utf-8",
     });
 
+    const shareData = {
+      title: downloadName,
+      files: [file]
+    }
+
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: downloadName,
-          files: [file]
-        })
+      if (navigator.share && navigator.canShare(shareData)) {
+        await navigator.share(shareData)
       } else {
         saveAs(file);
       }
@@ -103,12 +105,14 @@ async function download({ downloadType, downloadName }) {
       type: "image/png",
     });
 
+    const shareData = {
+      title: downloadName,
+      files: [file]
+    }
+
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: downloadName,
-          files: [file]
-        })
+      if (navigator.share && navigator.canShare(shareData)) {
+        await navigator.share(shareData)
       } else {
         saveAs(file);
       }
