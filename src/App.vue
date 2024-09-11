@@ -3,20 +3,10 @@
     <AppBar v-model:mode="mode" @download="download" @open="openFile" />
     <v-main style="display: flex; flex-direction: column;">
       <KeepAlive>
-        <v-ace-editor
-          v-if="mode == 'edit'"
-          v-model:value="code"
-          theme="chrome"
-          style="flex: 1 0 auto"
-        />
+        <v-ace-editor v-if="mode == 'edit'" v-model:value="code" theme="chrome" style="flex: 1 0 auto" />
       </KeepAlive>
       <KeepAlive>
-        <Diagram
-          v-if="mode == 'preview'"
-          :code="code"
-          v-model:image="image"
-          style="flex: 1 0 auto"
-        />
+        <Diagram v-if="mode == 'preview'" :code="code" v-model:image="image" style="flex: 1 0 auto" />
       </KeepAlive>
     </v-main>
   </v-app>
@@ -81,20 +71,51 @@ watch(code, (newCode) => {
 
 const image = ref();
 
-function download({ downloadType, downloadName }) {
+async function download({ downloadType, downloadName }) {
   if (downloadType == "code") {
     const file = new File([code.value], `${downloadName || "diagram"}.puml`, {
       type: "text/plain;charset=utf-8",
     });
-    saveAs(file);
+
+    try {
+      if (navigator.share) {
+        navigator.share({
+          title: downloadName,
+          files: [file]
+        })
+      } else {
+        saveAs(file);
+      }
+    } catch (e) {
+      alert(`can't share or download file: ${e.message}`)
+    }
+
     return;
   }
 
   if (downloadType == "image") {
-    const file = new File([image.value || ""], `${downloadName || "diagram"}.png`, {
+    if (!image.value) {
+      alert("Image isn't ready yet")
+      return;
+    }
+
+    const file = new File([image.value], `${downloadName || "diagram"}.png`, {
       type: "image/png",
     });
-    saveAs(file);
+
+    try {
+      if (navigator.share) {
+        navigator.share({
+          title: downloadName,
+          files: [file]
+        })
+      } else {
+        saveAs(file);
+      }
+    } catch (e) {
+      alert(`can't share or download file: ${e.message}`)
+    }
+
     return;
   }
 }
